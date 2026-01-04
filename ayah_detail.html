@@ -937,89 +937,32 @@
                         <span>الاستماع للآية</span>
                     </div>
 
-                    <!-- Custom Reciter Dropdown -->
-                    <div class="relative group ml-2">
+                    <!-- Custom Reciter Dropdown (Refined) -->
+                    <div class="relative group ml-2 z-50">
                         <button id="reciterDropdownBtn"
-                            class="flex items-center gap-2 bg-[#f9f7f2] dark:bg-[#0f291e] border border-[#1B4332]/20 dark:border-brand-gold/30 text-[#1B4332] dark:text-brand-gold text-xs rounded-2xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-gold/30 transition-all max-w-[150px]">
-                            <span id="currentReciterLabel" class="truncate font-bold">مشاري العفاسي</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-70 flex-shrink-0"
-                                viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clip-rule="evenodd" />
+                            class="flex items-center gap-3 bg-[#0f291e] border border-[#1B4332]/20 dark:border-brand-gold/20 text-brand-gold text-xs md:text-sm rounded-full px-5 py-2.5 hover:bg-[#163326] transition-all min-w-[160px] justify-between shadow-sm">
+                            <span id="currentReciterLabel" class="truncate font-bold font-serif text-[#D4AF37]">أحمد
+                                العجمي</span>
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-[#D4AF37] opacity-80 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
                         <!-- Dropdown Menu -->
                         <div id="reciterDropdownMenu"
-                            class="absolute top-full left-0 mt-2 w-64 bg-[#f9f7f2] dark:bg-[#1B4332] border border-[#1B4332]/10 dark:border-brand-gold/20 rounded-2xl shadow-xl opacity-0 invisible transform -translate-y-1 transition-all duration-200 z-50 overflow-hidden ring-1 ring-black/5">
+                            class="absolute top-full left-0 mt-2 w-64 bg-[#0f291e] border border-brand-gold/20 rounded-2xl shadow-xl opacity-0 invisible transform -translate-y-1 transition-all duration-200 overflow-hidden ring-1 ring-black/5">
 
                             <!-- Search Input -->
-                            <div
-                                class="p-3 border-b border-[#1B4332]/5 dark:border-white/5 sticky top-0 bg-[#f9f7f2] dark:bg-[#1B4332] z-10">
+                            <div class="p-3 border-b border-brand-gold/10 sticky top-0 bg-[#0f291e] z-10">
                                 <input type="text" id="reciterSearchInput" placeholder="بحث عن قارئ..."
-                                    class="w-full bg-transparent border border-[#1B4332]/20 dark:border-brand-gold rounded-lg px-3 py-1.5 text-xs text-[#1B4332] dark:text-brand-gold placeholder-[#1B4332]/50 dark:placeholder-brand-gold/50 focus:outline-none focus:ring-1 focus:ring-brand-gold/30 text-right">
+                                    class="w-full bg-[#163326] border border-brand-gold/20 rounded-lg px-3 py-2 text-xs text-brand-gold placeholder-brand-gold/40 focus:outline-none focus:ring-1 focus:ring-brand-gold/50 text-right font-serif">
                             </div>
 
-                            <div class="py-1 max-h-48 overflow-y-auto custom-scrollbar" id="reciterListContainer">
-                                <button onclick="selectReciter('Alafasy_128kbps', 'مشاري العفاسي')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Alafasy_128kbps" data-name="مشاري العفاسي">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ١</div>
-                                    <span class="text-right font-bold">مشاري العفاسي</span>
-                                </button>
-                                <button onclick="selectReciter('Minshawy_Murattal_128kbps', 'محمد صديق المنشاوي')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Minshawy_Murattal_128kbps" data-name="محمد صديق المنشاوي">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٢</div>
-                                    <span class="text-right font-bold">محمد صديق المنشاوي</span>
-                                </button>
-                                <button onclick="selectReciter('Husary_128kbps', 'محمود خليل الحصري')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Husary_128kbps" data-name="محمود خليل الحصري">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٣</div>
-                                    <span class="text-right font-bold">محمود خليل الحصري</span>
-                                </button>
-                                <button onclick="selectReciter('Abdul_Basit_Murattal_192kbps', 'عبد الباسط عبد الصمد')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Abdul_Basit_Murattal_192kbps" data-name="عبد الباسط عبد الصمد">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٤</div>
-                                    <span class="text-right font-bold">عبد الباسط عبد الصمد</span>
-                                </button>
-                                <button
-                                    onclick="selectReciter('Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net', 'أحمد العجمي')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net" data-name="أحمد العجمي">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٥</div>
-                                    <span class="text-right font-bold">أحمد العجمي</span>
-                                </button>
-                                <button onclick="selectReciter('Maher_AlMuaiqly_64kbps', 'ماهر المعيقلي')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Maher_AlMuaiqly_64kbps" data-name="ماهر المعيقلي">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٦</div>
-                                    <span class="text-right font-bold">ماهر المعيقلي</span>
-                                </button>
-                                <button onclick="selectReciter('Yasser_Ad-Dussary_128kbps', 'ياسر الدوسري')"
-                                    class="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#1B4332] dark:text-white hover:bg-[#1B4332]/5 dark:hover:bg-black/20 transition-colors border-b border-[#1B4332]/5 dark:border-white/5 last:border-0 reciter-option group"
-                                    data-value="Yasser_Ad-Dussary_128kbps" data-name="ياسر الدوسري">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-[#1B4332] text-white dark:bg-white/10 dark:text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
-                                        ٧</div>
-                                    <span class="text-right font-bold">ياسر الدوسري</span>
-                                </button>
-
+                            <div class="py-1 max-h-56 overflow-y-auto custom-scrollbar" id="reciterListContainer">
+                                <!-- Options will be populated by JS to ensure consistency -->
                             </div>
                         </div>
                     </div>
@@ -1556,25 +1499,51 @@
             }
         };
 
-        // Filter Reciters
-        function filterReciters(query) {
-            const options = document.querySelectorAll('.reciter-option');
-            const normalizedQuery = normalizeArabic(query.toLowerCase().trim());
+        function initReciterSelector() {
+            updateReciterText();
+            populateReciterList();
+        }
 
-            options.forEach(option => {
-                const nameAttr = option.getAttribute('data-name') || '';
-                const normalizedName = normalizeArabic(nameAttr.toLowerCase());
-                if (normalizedName.includes(normalizedQuery)) {
-                    option.classList.remove('hidden');
-                } else {
-                    option.classList.add('hidden');
-                }
+        function populateReciterList(filter = '') {
+            const container = document.getElementById('reciterListContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            // Convert to array for filtering
+            const reciters = Object.entries(reciterNames);
+            const filtered = reciters.filter(([id, name]) => name.includes(filter));
+
+            filtered.forEach(([id, name], index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full flex items-center gap-3 px-4 py-3 text-sm text-brand-gold hover:bg-[#163326] transition-colors border-b border-brand-gold/10 last:border-0 reciter-option group font-serif';
+                btn.onclick = () => selectReciter(id, name);
+
+                // Numbering Badge
+                const num = index + 1;
+
+                btn.innerHTML = `
+                   <div class="w-8 h-8 rounded-full bg-[#1B4332]/40 text-brand-gold flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform border border-brand-gold/10">
+                        ${num.toLocaleString('ar-EG')}
+                   </div>
+                   <span class="text-right font-bold flex-1">${name}</span>
+                   ${currentReciterId === id ? '<span class="text-brand-gold text-xs">✓</span>' : ''}
+                `;
+                container.appendChild(btn);
             });
         }
 
-        if (reciterSearchInput) {
-            reciterSearchInput.oninput = (e) => filterReciters(e.target.value);
+        // Filter Reciters
+        function filterReciters(query) {
+            populateReciterList(query);
         }
+
+        // Initialize Reciter List on Load
+        window.addEventListener('load', () => {
+            // ... existing load ...
+            // Ensure initReciterSelector is called if not already
+            initReciterSelector();
+        });
 
         // Select Reciter
         window.selectReciter = function (id, name) {
@@ -1583,12 +1552,11 @@
             updateReciterText();
             loadAudio();
             closeReciterDropdown();
+            // Re-render list to update checkmark
+            populateReciterList(reciterSearchInput ? reciterSearchInput.value : '');
         };
 
-        function initReciterSelector() {
-            updateReciterText();
-        }
-
+        // ... existing loadAudio ...
         function loadAudio(autoPlay = false) {
             const pad = n => n.toString().padStart(3, '0');
             const audioUrl = `https://everyayah.com/data/${currentReciterId}/${pad(surah)}${pad(ayah)}.mp3`;

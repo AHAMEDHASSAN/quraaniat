@@ -128,17 +128,42 @@ function loadLastReadVerse() {
     const ayahNum = parseInt(savedAyah);
     const surahName = surahs[surahNum - 1];
 
+    // Check Auto-Resume Preference
+    if (localStorage.getItem('kran_auto_resume') === 'true') {
+        // Redirect to Ayahs page with hash
+        window.location.href = `ayahs.html?surah=${surahNum}&name=${encodeURIComponent(surahName)}#ayah-${ayahNum}`;
+        return;
+    }
+
     // Update tracker card text
     if (trackerText) {
         trackerText.textContent = `سورة ${surahName} - الآية ${ayahNum.toLocaleString('ar-EG')}`;
     }
 
-    // Make tracker card clickable
+    // Make tracker card clickable (Updated Link)
     if (trackerCard) {
         trackerCard.style.display = 'block'; // Always show the tracker
         trackerCard.onclick = () => {
-            window.location.href = `ayah_detail.html?surah=${surahNum}&ayah=${ayahNum}`;
+            window.location.href = `ayahs.html?surah=${surahNum}&name=${encodeURIComponent(surahName)}#ayah-${ayahNum}`;
         };
+    }
+
+    // Inject "Continue Reading" Button in Hero Section (If not exists)
+    const searchContainer = document.querySelector('.relative.max-w-2xl.mx-auto.mt-6');
+    if (searchContainer && !document.getElementById('heroResumeBtn')) {
+        const btn = document.createElement('button');
+        btn.id = 'heroResumeBtn';
+        btn.className = 'mt-6 bg-[#D4AF37] text-white px-6 md:px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 mx-auto animate-fade-in-up font-serif';
+        btn.innerHTML = `
+            <span>متابعة القراءة: سورة ${surahName} آية ${ayahNum.toLocaleString('ar-EG')}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+            </svg>
+        `;
+        btn.onclick = () => {
+             window.location.href = `ayahs.html?surah=${surahNum}&name=${encodeURIComponent(surahName)}#ayah-${ayahNum}`;
+        };
+        searchContainer.after(btn);
     }
 
     // Update reading progress

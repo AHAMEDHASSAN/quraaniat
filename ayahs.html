@@ -404,13 +404,52 @@
       scrollbar-width: none;
       /* Firefox */
     }
+
+    /* Custom Scrollbar for Reciter List */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #9ca3af;
+      /* Gray-400 equivalent */
+      border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    /* Immersive Mode Styles */
+    header,
+    #breadcrumbBar,
+    #stickyPlayer {
+      transition: transform 0.3s ease-in-out;
+    }
+
+    body.immersive-mode header {
+      transform: translateY(-100%);
+    }
+
+    body.immersive-mode #breadcrumbBar {
+      transform: translateY(-120%);
+    }
+
+    body.immersive-mode #stickyPlayer {
+      transform: translateY(100%) !important;
+    }
   </style>
 </head>
 
 <body class="bg-[#FDFBF7] text-[#1B4332]">
 
   <!-- Header -->
-  <header class="bg-[#1B4332] text-white shadow-md sticky top-0 z-50">
+  <header id="mainHeader" class="bg-[#1B4332] text-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto max-w-6xl px-3 md:px-6 py-3 flex justify-between items-center dir-rtl">
       <!-- Logo -->
       <div onclick="window.location.href='index.html'"
@@ -467,9 +506,61 @@
     </div>
   </header>
 
-  <!-- Scroll to Top Button -->
+  <!-- Simple Sticky Audio Player -->
+  <div id="stickyPlayer"
+    class="fixed bottom-0 left-0 w-full bg-[#1B4332] dark:bg-brand-dark border-t border-[#D4AF37]/30 shadow-2xl z-50 transform transition-transform duration-300">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
+      <!-- Right: Play/Pause & Ayah Info -->
+      <div class="flex items-center gap-4 flex-1">
+        <button id="playerPlayBtn"
+          class="w-10 h-10 rounded-full bg-[#D4AF37] text-[#1B4332] flex items-center justify-center hover:scale-110 transition-transform shadow-lg">
+          <svg id="pPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-0.5" viewBox="0 0 20 20"
+            fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+              clip-rule="evenodd" />
+          </svg>
+          <svg id="pPauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" viewBox="0 0 20 20"
+            fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <div class="flex flex-col">
+          <span class="text-[#D4AF37] text-[10px] md:text-xs">القارئ: <span id="playerReciterName">...</span></span>
+        </div>
+      </div>
+
+      <!-- Left: Controls -->
+      <div class="flex items-center gap-2 md:gap-4 ltr">
+        <button id="playerPrevBtn" class="text-white/60 hover:text-white p-2" title="الآية السابقة">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 rotate-180" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L9 11.883V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 009 6v2.117l-4.445-2.95z" />
+          </svg>
+        </button>
+
+        <button id="playerNextBtn" class="text-white/60 hover:text-white p-2" title="الآية التالية">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 rotate-180" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              d="M15.445 14.832A1 1 0 0017 14V6a1 1 0 00-1.555-.832L11 8.117V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4A1 1 0 0011 14v-2.117l4.445 2.95z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- Progress Bar (Visual only for now) -->
+    <div class="h-1 bg-black/20 w-full relative">
+      <div id="playerProgress" class="absolute right-0 top-0 h-full bg-[#D4AF37] transition-all duration-300"
+        style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Scroll to Top Button (Shifted up to avoid player overlap) -->
   <button id="scrollToTopBtn"
-    class="fixed bottom-8 right-8 z-50 bg-[#1B4332] dark:bg-brand-gold text-white dark:text-[#1B4332] p-3 rounded-2xl shadow-2xl opacity-0 translate-y-10 transition-all duration-500 hover:scale-110 active:scale-95 border border-white/20 dark:border-brand-gold group pointer-events-none"
+    class="fixed bottom-24 right-6 md:right-8 z-50 bg-[#1B4332] dark:bg-brand-gold text-white dark:text-[#1B4332] p-3 rounded-2xl shadow-2xl opacity-0 translate-y-10 transition-all duration-500 hover:scale-110 active:scale-95 border border-white/20 dark:border-brand-gold group pointer-events-none"
     onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform" fill="none"
       viewBox="0 0 24 24" stroke="currentColor">
@@ -478,7 +569,7 @@
   </button>
 
   <!-- Breadcrumb & Surah Selector -->
-  <div
+  <div id="breadcrumbBar"
     class="bg-white dark:bg-brand-dark border-b border-gray-100 dark:border-white/10 sticky top-[57px] z-40 shadow-sm">
     <div class="container mx-auto max-w-6xl px-4 md:px-6 py-3 flex items-center justify-between">
       <!-- Breadcrumb (Right) -->
@@ -494,50 +585,90 @@
         <a href="index.html"
           class="hover:text-[#1B4332] dark:hover:text-brand-gold transition-colors whitespace-nowrap text-xs md:text-sm">فهرس
           السور</a>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400 dark:text-white/20 rotate-180"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg"
+          class="h-3 w-3 text-gray-400 dark:text-white/20 rotate-180 hidden md:block" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m9 18 6-6-6-6" />
         </svg>
         <span id="breadcrumbSurah"
-          class="text-[#D4AF37] font-bold cursor-pointer hover:underline whitespace-nowrap">...</span>
+          class="text-[#D4AF37] font-bold cursor-pointer hover:underline whitespace-nowrap hidden md:inline">...</span>
       </nav>
 
       <!-- Surah Selector (Left) -->
-      <div class="relative">
-        <button id="surahSelectorBtn"
-          class="flex items-center gap-2 px-3 py-1.5 bg-[#fdfcfb] dark:bg-white/5 border border-[#ebe8e1] dark:border-white/10 rounded-lg hover:border-[#1B4332] dark:hover:border-brand-gold hover:bg-white dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-1 focus:ring-[#1B4332]/20">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#1B4332] dark:text-white/80" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          <span id="currentSurahName" class="font-bold text-[#1B4332] dark:text-white text-sm">...</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 dark:text-white/20 transition-transform"
-            id="dropdownArrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <button id="surahSelectorBtn"
+            class="flex items-center gap-1.5 md:gap-2 px-2 py-1 md:px-3 md:py-1.5 bg-[#fdfcfb] dark:bg-white/5 border border-[#ebe8e1] dark:border-white/10 rounded-lg hover:border-[#1B4332] dark:hover:border-brand-gold hover:bg-white dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-1 focus:ring-[#1B4332]/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 text-[#1B4332] dark:text-white/80"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span id="currentSurahName" class="font-bold text-[#1B4332] dark:text-white text-xs md:text-sm">...</span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 md:h-4 md:w-4 text-gray-400 dark:text-white/20 transition-transform" id="dropdownArrow"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
 
-        <!-- Dropdown Menu -->
-        <div id="surahDropdown"
-          class="hidden absolute left-0 mt-2 w-72 bg-[#fdfcfb] dark:bg-brand-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-[400px] overflow-hidden z-50">
-          <!-- Search Box -->
-          <div class="p-3 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
-            <input type="text" id="surahSearch" placeholder="ابحث عن سورة..."
-              class="w-full px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 text-right dark:text-white" />
-          </div>
+          <!-- Dropdown Menu -->
+          <div id="surahDropdown"
+            class="hidden absolute left-0 mt-2 w-72 bg-[#fdfcfb] dark:bg-brand-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-xl max-h-[400px] overflow-hidden z-50">
+            <!-- Search Box -->
+            <div class="p-3 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+              <input type="text" id="surahSearch" placeholder="ابحث عن سورة..."
+                class="w-full px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1B4332]/20 text-right dark:text-white" />
+            </div>
 
-          <!-- Surah List -->
-          <div id="surahList" class="overflow-y-auto max-h-[340px]">
-            <!-- Will be populated by JavaScript -->
+            <!-- Surah List -->
+            <div id="surahList" class="overflow-y-auto max-h-[340px]">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
         </div>
+
+        <!-- Reciter Selector (New) -->
+        <div class="relative group z-50">
+          <button id="reciterDropdownBtn"
+            class="hidden md:flex items-center gap-2 bg-[#1B4332] text-white border border-[#1B4332] text-xs md:text-xs rounded-full px-4 py-1.5 hover:bg-[#163326] transition-all justify-between shadow-sm">
+            <span id="currentReciterLabel" class="truncate font-bold font-serif whitespace-nowrap">مشاري العفاسي</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white/70 flex-shrink-0" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <!-- Mobile Icon Only Btn -->
+          <button id="reciterDropdownMobileBtn" class="md:hidden p-2 rounded-full bg-[#1B4332] text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 9v3a5.006 5.006 0 0 1-5 5h-4a5.006 5.006 0 0 1-5-5V9m7 9v3m-3 0h6M11 3h2a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" />
+            </svg>
+          </button>
+
+          <!-- Reciter Dropdown Menu -->
+          <div id="reciterDropdown"
+            class="hidden absolute left-0 mt-2 w-64 bg-[#0f291e] border border-brand-gold/20 rounded-2xl shadow-xl transition-all duration-200 overflow-hidden ring-1 ring-black/5 z-[60]">
+
+            <!-- Search Input -->
+            <div class="p-3 border-b border-brand-gold/10 sticky top-0 bg-[#0f291e] z-10">
+              <input type="text" id="reciterSearchInput" placeholder="بحث عن قارئ..."
+                class="w-full bg-[#163326] border border-brand-gold/20 rounded-lg px-3 py-2 text-xs text-brand-gold placeholder-brand-gold/40 focus:outline-none focus:ring-1 focus:ring-brand-gold/50 text-right font-serif">
+            </div>
+
+            <div class="py-1 max-h-56 overflow-y-auto custom-scrollbar" id="reciterListContainer">
+              <!-- Options will be populated by JS -->
+            </div>
+          </div>
+        </div>
+
+
       </div>
     </div>
   </div>
 
-  <main class="min-h-screen pb-20 flex-grow">
+  <main class="min-h-screen pb-40 flex-grow">
     <div id="loading" class="flex flex-col items-center justify-center min-h-[50vh]">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1B4332] dark:border-brand-gold mb-4"></div>
       <p class="text-gray-500 dark:text-white/60 font-serif">جاري تحميل السورة...</p>
@@ -708,6 +839,25 @@
     let surahName = urlParams.get("name") || surahs[surahNumber - 1];
     let currentAyahs = []; // Global variable to store current surah verses
 
+    // ====== Audio Player Global Variables (Gapless) ======
+    const audioPrimary = new Audio();
+    const audioSecondary = new Audio();
+    let activeAudio = audioPrimary; // Specific reference to currently playing
+    let isPlaying = false;
+    let currentPlayingAyah = 0; // 0 = not playing
+    let currentReciterId = localStorage.getItem('lastReciter') || 'Alafasy_128kbps';
+
+
+    const reciterNames = {
+      'Alafasy_128kbps': 'مشاري العفاسي',
+      'Minshawy_Murattal_128kbps': 'محمد صديق المنشاوي',
+      'Husary_128kbps': 'محمود خليل الحصري',
+      'Abdul_Basit_Murattal_192kbps': 'عبد الباسط عبد الصمد',
+      'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net': 'أحمد العجمي',
+      'Maher_AlMuaiqly_64kbps': 'ماهر المعيقلي',
+      'Yasser_Ad-Dussary_128kbps': 'ياسر الدوسري'
+    };
+
     function normalizeArabic(text) {
       if (!text) return "";
       return text
@@ -778,14 +928,259 @@
       return favs.some(f => f.surah === surah && f.ayah === ayah);
     }
 
+    // ====== Audio Player Functions (Gapless) ======
+    function initAudioPlayer() {
+      const stickyPlayer = document.getElementById('stickyPlayer');
+      const playerPlayBtn = document.getElementById('playerPlayBtn');
+
+      const pPlayIcon = document.getElementById('pPlayIcon');
+      const pPauseIcon = document.getElementById('pPauseIcon');
+      const playerAyahText = document.getElementById('playerAyahText');
+      const playerReciterName = document.getElementById('playerReciterName');
+      const playerProgress = document.getElementById('playerProgress');
+      const playerNextBtn = document.getElementById('playerNextBtn');
+      const playerPrevBtn = document.getElementById('playerPrevBtn');
+
+      const currentReciterLabel = document.getElementById('currentReciterLabel');
+
+      // Update Label
+      const name = reciterNames[currentReciterId] || 'مشاري العفاسي';
+      if (currentReciterLabel) currentReciterLabel.textContent = name;
+      if (playerReciterName) playerReciterName.textContent = name;
+
+      // Populate List
+      if (typeof populateReciterList === 'function') {
+        populateReciterList();
+      }
+
+      // -- Setup Dual Players --
+      [audioPrimary, audioSecondary].forEach(audio => {
+        audio.onended = () => {
+          // When one track ends, we immediately switch to the other if it's ready
+          playNextAyahGapless();
+        };
+
+        audio.ontimeupdate = () => {
+          // Only update UI if this is the active audio
+          if (audio === activeAudio && audio.duration) {
+            const pct = (audio.currentTime / audio.duration) * 100;
+            if (playerProgress) playerProgress.style.width = `${pct}%`;
+          }
+        };
+
+        audio.onerror = (e) => {
+          console.error("Audio Load Error", e);
+          // If error, try skip to next? Or stop?
+          // For now, let's just log.
+        };
+      });
+
+      // Play Button Click (Sticky Player)
+      if (playerPlayBtn) playerPlayBtn.onclick = togglePlay;
+
+
+
+      // Next/Prev
+      if (playerNextBtn) playerNextBtn.onclick = () => playAyah(currentPlayingAyah + 1); // Manual Force
+      if (playerPrevBtn) playerPrevBtn.onclick = () => playAyah(currentPlayingAyah - 1); // Manual Force
+
+      // Ayah Click to Play - Re-attach in case of reload
+    }
+
+    function togglePlay() {
+      if (currentPlayingAyah === 0) {
+        playAyah(1); // Start from beginning
+      } else {
+        if (isPlaying) {
+          activeAudio.pause();
+          isPlaying = false;
+          updatePlayerUI();
+        } else {
+          activeAudio.play();
+          isPlaying = true;
+          updatePlayerUI();
+        }
+      }
+    }
+
+    function getAyahUrl(ayahNum) {
+      const pad = n => n.toString().padStart(3, '0');
+      return `https://everyayah.com/data/${currentReciterId}/${pad(surahNumber)}${pad(ayahNum)}.mp3`;
+    }
+
+    // Main Play Function - Entry Point
+    function playAyah(ayahNum) {
+      if (ayahNum > currentAyahs.length || ayahNum < 1) return;
+
+      // Reset Players
+      audioPrimary.pause();
+      audioSecondary.pause();
+
+      currentPlayingAyah = ayahNum;
+      isPlaying = true;
+
+      // Set Primary
+      activeAudio = audioPrimary;
+      activeAudio.src = getAyahUrl(ayahNum);
+
+      activeAudio.play().then(() => {
+        updatePlayerUI();
+        updateAyahVisuals(ayahNum);
+
+        // Prepare Secondary immediately
+        preloadNextForGapless(ayahNum + 1);
+
+      }).catch(e => console.error(e));
+    }
+
+    function preloadNextForGapless(nextNum) {
+      if (nextNum > currentAyahs.length) return;
+
+      // Use the inactive player
+      const bufferAudio = (activeAudio === audioPrimary) ? audioSecondary : audioPrimary;
+      bufferAudio.src = getAyahUrl(nextNum);
+      bufferAudio.load(); // Force load
+      // We don't play() yet.
+    }
+
+    function playNextAyahGapless() {
+      const nextNum = currentPlayingAyah + 1;
+      if (nextNum > currentAyahs.length) {
+        isPlaying = false;
+        updatePlayerUI();
+        return;
+      }
+
+      // Swap Active Player
+      const nextAudio = (activeAudio === audioPrimary) ? audioSecondary : audioPrimary;
+
+      // Check if ready?
+      // Ideally it should be readyState >= 3 (HAVE_FUTURE_DATA) or 4 (HAVE_ENOUGH_DATA).
+      // If not, we just play() and it will buffer if needed.
+
+      currentPlayingAyah = nextNum;
+      activeAudio = nextAudio;
+
+      activeAudio.play().then(() => {
+        updateAyahVisuals(nextNum);
+        // Preload NEXT NEXT
+        preloadNextForGapless(nextNum + 1);
+      }).catch(e => {
+        console.error("Gapless transition failed, retrying manual load", e);
+        playAyah(nextNum); // Fallback
+      });
+    }
+
+    function playPrevAyah() {
+      playAyah(currentPlayingAyah - 1);
+    }
+
+    // Helper to group visual updates
+    function updateAyahVisuals(num) {
+      highlightAyah(num);
+      updatePlayerUI(); // Updates text/icons
+
+      // Show Player Bar
+      const stickyPlayer = document.getElementById('stickyPlayer');
+      if (stickyPlayer) stickyPlayer.classList.remove('translate-y-full');
+
+      // Scroll to Ayah
+      const el = document.getElementById(`ayah-${num}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function updatePlayerUI() {
+      const pPlayIcon = document.getElementById('pPlayIcon');
+      const pPauseIcon = document.getElementById('pPauseIcon');
+
+      const playerAyahText = document.getElementById('playerAyahText');
+
+      // Sticky Player Icons
+      if (pPlayIcon && pPauseIcon) {
+        if (isPlaying) {
+          pPlayIcon.classList.add('hidden');
+          pPauseIcon.classList.remove('hidden');
+        } else {
+          pPlayIcon.classList.remove('hidden');
+          pPauseIcon.classList.add('hidden');
+        }
+      }
+
+
+
+      // Update Text
+      if (currentPlayingAyah > 0 && currentAyahs[currentPlayingAyah - 1]) {
+        if (playerAyahText) playerAyahText.textContent = currentAyahs[currentPlayingAyah - 1].text;
+      }
+    }
+
+    function highlightAyah(num) {
+      // Remove old highlights
+      document.querySelectorAll('.ayah-row').forEach(row => {
+        row.classList.remove('bg-[#D4AF37]/10', 'rounded-xl');
+      });
+
+      const row = document.getElementById(`ayah-${num}`);
+      if (row) {
+        row.classList.add('bg-[#D4AF37]/20', 'rounded-xl');
+      }
+    }
+
+    // ====== Reciter Selector Logic (Shared) ======
+    function populateReciterList(filter = '') {
+      const reciterListContainer = document.getElementById('reciterListContainer');
+      if (!reciterListContainer) return;
+      reciterListContainer.innerHTML = '';
+
+      const reciters = Object.entries(reciterNames);
+      const filtered = reciters.filter(([id, name]) => name.includes(filter));
+
+      filtered.forEach(([id, name], index) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full flex items-center gap-4 px-4 py-3 text-sm text-[#D4AF37] hover:bg-[#163326] transition-colors border-b border-[#1B4332]/40 last:border-0 reciter-option group font-serif';
+
+        btn.onclick = () => {
+          currentReciterId = id;
+          localStorage.setItem('lastReciter', id);
+
+          const currentReciterLabel = document.getElementById('currentReciterLabel');
+          const playerReciterName = document.getElementById('playerReciterName');
+
+          if (currentReciterLabel) currentReciterLabel.textContent = name;
+          if (playerReciterName) playerReciterName.textContent = name;
+
+          // Restart current ayah with new reciter if playing
+          if (isPlaying || currentPlayingAyah > 0) {
+            playAyah(currentPlayingAyah);
+          }
+
+          const reciterDropdown = document.getElementById('reciterDropdown');
+          if (reciterDropdown) reciterDropdown.classList.add('hidden');
+          populateReciterList(); // Update checks
+        };
+
+        const num = (index + 1).toLocaleString('ar-EG');
+
+        btn.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-[#1B4332] text-[#D4AF37] border border-[#1B4332]/50 flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                ${num}
+            </div>
+            <span class="text-right font-bold text-[#D4AF37] flex-1 text-base">${name}</span>
+            ${currentReciterId === id ? '<span class="text-[#D4AF37] text-xs">✓</span>' : ''}
+      `;
+        reciterListContainer.appendChild(btn);
+      });
+    }
+
+
     async function loadSurah() {
       try {
-        // Using quran-json from jsdelivr CDN - CORRECT PATH!
+        // Using quran-json from jsdelivr CDN
         const response = await fetch(`https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/chapters/${surahNumber}.json`);
         const data = await response.json();
 
         if (data && data.verses) {
-          currentAyahs = data.verses; // Store in global variable
+          currentAyahs = data.verses;
           const ayahs = currentAyahs;
 
           // Update Header
@@ -869,9 +1264,12 @@
                     `;
 
             // Click to go to detail
-            ayahDiv.onclick = () => {
+            ayahDiv.onclick = (e) => {
+              e.stopPropagation();
               window.location.href = `ayah_detail.html?surah=${surahNumber}&ayah=${ayahNumber}`;
             };
+
+
 
             row.appendChild(heartBtn);
             row.appendChild(ayahDiv);
@@ -880,6 +1278,12 @@
 
           document.getElementById('loading').classList.add('hidden');
           document.getElementById('content').classList.remove('hidden');
+
+          // Initialize IntersectionObserver for tracking
+          initReadingTracker();
+
+          // Initialize Audio Player
+          initAudioPlayer();
 
           // Handle automatic scrolling to hashed Ayah (from search results)
           const hash = window.location.hash;
@@ -893,8 +1297,12 @@
                   targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   targetEl.classList.add('bg-[#D4AF37]/10', 'rounded-xl'); // Highlight effect
                   setTimeout(() => targetEl.classList.remove('bg-[#D4AF37]/10'), 3000);
+
+                  // Also update tracker immediately
+                  localStorage.setItem('lastReadSurah', surahNumber);
+                  localStorage.setItem('lastReadAyah', ayahNum);
                 }
-              }, 100);
+              }, 500);
             }
           }
         }
@@ -902,6 +1310,68 @@
         console.error(error);
         document.getElementById('loading').innerHTML = '<p class="text-red-500">حدث خطأ في تحميل السورة</p>';
       }
+
+      // DOM Elements for Reciter
+      const reciterDropdownBtn = document.getElementById('reciterDropdownBtn');
+      const reciterDropdownMobileBtn = document.getElementById('reciterDropdownMobileBtn');
+      const reciterDropdown = document.getElementById('reciterDropdown');
+      const reciterSearchInput = document.getElementById('reciterSearchInput');
+
+      // Toggle Dropdown
+      const toggleReciterDropdown = (e) => {
+        e.stopPropagation();
+        reciterDropdown.classList.toggle('hidden');
+        if (!reciterDropdown.classList.contains('hidden')) {
+          reciterSearchInput.focus();
+        }
+      };
+
+      if (reciterDropdownBtn) reciterDropdownBtn.onclick = toggleReciterDropdown;
+      if (reciterDropdownMobileBtn) reciterDropdownMobileBtn.onclick = toggleReciterDropdown;
+
+      if (reciterSearchInput) reciterSearchInput.oninput = (e) => populateReciterList(e.target.value);
+
+      // Stop propagation click inside
+      if (reciterDropdown) reciterDropdown.onclick = (e) => e.stopPropagation();
+
+      // Close on outside click (merged with existing listener)
+      document.addEventListener('click', (e) => {
+        // ... existing Logic handles surahDropdown ... 
+        // Add Logic for Reciter Dropdown
+        if (reciterDropdownBtn && reciterDropdown && reciterDropdownMobileBtn) {
+          if (!reciterDropdownBtn.contains(e.target) && !reciterDropdownMobileBtn.contains(e.target) && !reciterDropdown.contains(e.target)) {
+            reciterDropdown.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    // Reading Tracker Logic
+    function initReadingTracker() {
+      const observerOptions = {
+        root: null,
+        rootMargin: '-40% 0px -40% 0px', // Center tracking
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const ayahId = entry.target.id;
+            if (ayahId) {
+              const ayahNum = parseInt(ayahId.replace('ayah-', ''));
+              localStorage.setItem('lastReadSurah', surahNumber);
+              localStorage.setItem('lastReadAyah', ayahNum);
+              // Store Surah Name too for easier display on homepage
+              localStorage.setItem('lastReadSurahName', surahName);
+            }
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.ayah-row').forEach(row => {
+        observer.observe(row);
+      });
     }
 
     // ====== Surah Selector Dropdown ======
@@ -1055,6 +1525,7 @@
 
     window.onload = loadSurah;
   </script>
+
   <script>
     // Scroll to Top Logic
     const scrollToTopBtn = document.getElementById('scrollToTopBtn');
@@ -1067,6 +1538,19 @@
         scrollToTopBtn.classList.remove('opacity-100', 'translate-y-0');
       }
     });
+    // ====== Immersive Mode Logic ======
+    document.addEventListener('click', (e) => {
+
+
+      // Ignore if clicking interactive elements or UI containers
+      if (e.target.closest('button, a, input, select, textarea, #stickyPlayer, #mainHeader, #breadcrumbBar, #surahDropdown, #reciterDropdown')) {
+        return;
+      }
+
+      // Toggle class for empty space
+      document.body.classList.toggle('immersive-mode');
+    });
+
   </script>
 </body>
 

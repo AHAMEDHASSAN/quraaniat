@@ -274,6 +274,18 @@
                         <button class="option-btn" data-height="3.0">واسع</button>
                     </div>
                 </div>
+
+                <!-- Reading Options -->
+                <div class="settings-section">
+                    <label class="settings-label">خيارات القراءة</label>
+                    <div class="flex items-center justify-between p-3 border border-gray-200 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-white/5">
+                        <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">استئناف القراءة تلقائياً</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoResumeToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1B4332] dark:peer-checked:bg-[#D4AF37]"></div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -357,6 +369,17 @@
         // Height
         const storedHeight = localStorage.getItem('kran_line_height') || '2.4';
         setLineHeight(storedHeight);
+
+        // Auto Resume
+        const autoResumeToggle = document.getElementById('autoResumeToggle');
+        if (autoResumeToggle) {
+            const isAutoResume = localStorage.getItem('kran_auto_resume') === 'true';
+            autoResumeToggle.checked = isAutoResume;
+
+            autoResumeToggle.onchange = (e) => {
+                localStorage.setItem('kran_auto_resume', e.target.checked);
+            };
+        }
     }
     
     // Listeners for Buttons
