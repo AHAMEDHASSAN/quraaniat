@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>القرآن الكريم - الفهرس</title>
-    
+
     <!-- PWA & Mobile Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1B4332">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="img/Logo.jpeg">
+    <link rel="apple-touch-icon" href="img/icon-512.png">
 
     <!-- Google Fonts: Cairo and Amiri -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -428,6 +428,15 @@
     <script>
         function closeCelebration() {
             document.getElementById('celebrationModal').style.display = 'none';
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
         }
     </script>
     <script>
