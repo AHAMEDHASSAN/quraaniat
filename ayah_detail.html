@@ -1273,14 +1273,19 @@
             }
 
             try {
-                // Fetch Surah data from quran-json
-                const response = await fetch(`https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/chapters/${surah}.json`);
+                // Migration to Quran.com API v4
+                const apiUrl = `https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?language=ar&fields=text_uthmani`;
+                const response = await fetch(apiUrl);
                 const data = await response.json();
 
-                if (data && data.verses) {
-                    const ayahData = data.verses[ayah - 1]; // ayah is 1-indexed
+                if (data && data.verse) {
+                    const ayahData = data.verse;
                     const surahName = surahs[surah - 1];
-                    const totalAyahs = data.verses.length;
+                    // To get total ayahs, we might need chapter info or use a constant
+                    // For now, let's fetch chapter info to be accurate
+                    const chapterRes = await fetch(`https://api.quran.com/api/v4/chapters/${surah}`);
+                    const chapterData = await chapterRes.json();
+                    const totalAyahs = chapterData.chapter.verses_count;
 
                     // Update Breadcrumb and Selectors
                     document.getElementById('breadcrumbSurah').textContent = `سورة ${surahName}`;
@@ -1300,9 +1305,8 @@
                         ayahNumInfo.textContent = `الآية ${ayah.toLocaleString('ar-EG')} من ${totalAyahs.toLocaleString('ar-EG')}`;
                     }
 
-                    ayahText = stripBasmala(ayahData.text, surah, ayah);
+                    ayahText = cleanQuranicText(stripBasmala(ayahData.text_uthmani, surah, ayah));
                     currentSurahName = surahName;
-
                     document.getElementById('ayahText').textContent = ayahText;
                     document.getElementById('ayahNumBadge').textContent = ayah.toLocaleString('ar-EG');
 
@@ -1391,6 +1395,17 @@
                 .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0610-\u061A\u0640]/g, "")
                 .replace(/[إأآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/ئ/g, 'ي').replace(/ؤ/g, 'و').replace(/ء/g, '')
                 .replace(/[^\u0621-\u064A\s]/g, " ").replace(/\s+/g, " ").trim();
+        }
+
+        function cleanQuranicText(text) {
+            if (!text) return "";
+            return text
+                .replace(/\u08F0/g, '\u064C') // Open Dammatan
+                .replace(/\u08F1/g, '\u064B') // Open Fathatan
+                .replace(/\u08F2/g, '\u064D') // Open Kasratan
+                .replace(/[\u06D6-\u06ED\u08F3-\u08FF\u0600-\u060F\u06DD\u06DE]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         function stripBasmala(text, surahNumber, ayahNumber) {
