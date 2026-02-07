@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quranin-v1';
+const CACHE_NAME = 'quranin-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('[Service Worker] Caching core assets');
+                console.log('[SW] Caching core assets');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
             .then(() => self.skipWaiting())
@@ -33,7 +33,7 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cache => {
                     if (cache !== CACHE_NAME) {
-                        console.log('[Service Worker] Deleting old cache:', cache);
+                        console.log('[SW] Deleting old cache:', cache);
                         return caches.delete(cache);
                     }
                 })
@@ -42,11 +42,23 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch Event: Cache First, falling back to Network
+// Fetch Event with API exclusion
 self.addEventListener('fetch', event => {
     // Skip non-GET requests
     if (event.request.method !== 'GET') return;
 
+    // CRITICAL: Never cache API requests - always fetch fresh data
+    const isApiRequest = event.request.url.includes('api.quran.com') || 
+                        event.request.url.includes('api.alquran.cloud') ||
+                        event.request.url.includes('everyayah.com');
+    
+    if (isApiRequest) {
+        // Always fetch fresh data from network for API calls
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
+    // For non-API requests: Cache First strategy
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
             if (cachedResponse) {
@@ -55,28 +67,24 @@ self.addEventListener('fetch', event => {
 
             // If not in cache, try network
             return fetch(event.request).then(networkResponse => {
-                // Return network response even if we don't cache it
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                    // For external resources like CDN, we might still want to cache them if they are successful
-                    if (networkResponse && networkResponse.status === 200 && (event.request.url.includes('google') || event.request.url.includes('tailwindcss'))) {
-                        let responseToCache = networkResponse.clone();
-                        caches.open(CACHE_NAME).then(cache => {
-                            cache.put(event.request, responseToCache);
-                        });
-                    }
+                if (!networkResponse || networkResponse.status !== 200) {
                     return networkResponse;
                 }
 
-                // Cache the new resource
-                let responseToCache = networkResponse.clone();
-                caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, responseToCache);
-                });
+                // Cache external resources (fonts, CDN)
+                if (event.request.url.includes('google') || 
+                    event.request.url.includes('tailwindcss') ||
+                    event.request.url.includes('gstatic')) {
+                    let responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
 
                 return networkResponse;
             }).catch(() => {
-                // If offline and not in cache, you could return an offline page here
-                // For this app, most pages are already in ASSETS_TO_CACHE
+                // Offline fallback
+                return caches.match('./index.html');
             });
         })
     );
