@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأذكار والأدعية - القرآن الكريم</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Theme Initialization: Prevent Flash -->
+    <script>
+        (function () {
+            const theme = localStorage.getItem('kran_theme') || 'dark';
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#FFFBEB',
+                            DEFAULT: '#1B4332',
+                            dark: '#0f291e',
+                            gold: '#D4AF37',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        serif: ['Amiri', 'serif'],
+                        naskh: ['Noto Naskh Arabic', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Noto Naskh Arabic", sans-serif;
+            overflow-x: hidden;
+        }
+
+        .font-amiri {
+            font-family: "Amiri", serif;
+        }
+
+        .adhkar-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="bg-[#FDFBF7] dark:bg-brand-dark text-[#1B4332] dark:text-white flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-[#1B4332] text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto max-w-6xl px-3 md:px-6 py-3 flex justify-between items-center dir-rtl">
+            <div class="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+                onclick="window.location.href='index.html'">
+                <img src="img/Logo.jpeg" alt="Logo"
+                    class="h-10 md:h-14 w-auto hover:scale-110 transition-transform origin-right"
+                    style="filter: invert(1) brightness(1.5) sepia(1) saturate(5) hue-rotate(10deg); mix-blend-mode: screen; transform: scaleX(1.3);">
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-6 text-sm">
+                <a href="index.html"
+                    class="flex items-center gap-1.5 md:gap-2 text-gray-300 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="text-xs md:text-sm">الرئيسية</span>
+                </a>
+                <a href="search.html" class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span class="hidden md:inline">البحث</span>
+                </a>
+                <a href="favorites.html"
+                    class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span class="hidden md:inline">المفضلة</span>
+                </a>
+                <div class="h-5 w-px bg-white/20 mx-1 hidden md:block"></div>
+                <button onclick="toggleSettings();" class="text-gray-300 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="bg-[#1B4332] pb-12 pt-6 rounded-b-[3rem] shadow-lg mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 pattern-dots"></div>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-white font-amiri mb-2" id="pageTitle">حصن المسلم</h1>
+            <p class="text-green-100/80 text-sm">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</p>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="container mx-auto max-w-4xl px-4 -mt-16 relative z-20 mb-10">
+        <div
+            class="bg-white dark:bg-white/5 rounded-2xl p-2 shadow-md flex justify-around md:justify-center gap-2 md:gap-4 overflow-x-auto">
+            <button onclick="setCategory('morning')"
+                class="tab-btn active flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap"
+                data-cat="morning">
+                <span>☀️</span> <span class="font-bold">الصباح</span>
+            </button>
+            <button onclick="setCategory('evening')"
+                class="tab-btn flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap"
+                data-cat="evening">
+                <span>🌙</span> <span class="font-bold">المساء</span>
+            </button>
+            <button onclick="setCategory('sleep')"
+                class="tab-btn flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap"
+                data-cat="sleep">
+                <span>💤</span> <span class="font-bold">النوم</span>
+            </button>
+            <button onclick="setCategory('all')"
+                class="tab-btn flex items-center gap-2 px-6 py-3 rounded-xl transition-all whitespace-nowrap"
+                data-cat="all">
+                <span>🤲</span> <span class="font-bold">شاملة</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <main class="container mx-auto max-w-4xl px-4 pb-20 flex-grow">
+        <div id="adhkarGrid" class="grid grid-cols-1 gap-6">
+            <!-- Items populated by JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <!-- Footer -->
+    <footer class="pt-16 pb-6 border-t border-border/10 bg-white/50 dark:bg-brand-dark">
+        <div class="container mx-auto max-w-5xl px-6 text-center">
+            <!-- Adhkar & Duas (Centered Section) -->
+            <div class="mb-16">
+                <h3
+                    class="font-amiri font-bold text-[#1B4332] dark:text-brand-gold mb-8 text-2xl flex items-center justify-center gap-4">
+                    <div class="h-px w-10 bg-[#D4AF37]/40"></div>
+                    الأذكار والأدعية
+                    <div class="h-px w-10 bg-[#D4AF37]/40"></div>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                    <a href="adhkar.html?type=morning"
+                        class="flex flex-col items-center gap-3 p-5 bg-white dark:bg-white/5 border border-[#e5e0d4] dark:border-white/10 rounded-2xl hover:border-[#1B4332] dark:hover:border-brand-gold hover:shadow-lg transition-all group">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-[#1B4332]/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            ☀️</div>
+                        <div>
+                            <h4 class="font-bold text-[#1B4332] dark:text-brand-gold text-sm">أذكار الصباح</h4>
+                        </div>
+                    </a>
+
+                    <a href="adhkar.html?type=evening"
+                        class="flex flex-col items-center gap-3 p-5 bg-white dark:bg-white/5 border border-[#e5e0d4] dark:border-white/10 rounded-2xl hover:border-[#1B4332] dark:hover:border-brand-gold hover:shadow-lg transition-all group">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-[#1B4332]/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            🌙</div>
+                        <div>
+                            <h4 class="font-bold text-[#1B4332] dark:text-brand-gold text-sm">أذكار المساء</h4>
+                        </div>
+                    </a>
+
+                    <a href="adhkar.html?type=sleep"
+                        class="flex flex-col items-center gap-3 p-5 bg-white dark:bg-white/5 border border-[#e5e0d4] dark:border-white/10 rounded-2xl hover:border-[#1B4332] dark:hover:border-brand-gold hover:shadow-lg transition-all group">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-[#1B4332]/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            💤</div>
+                        <div>
+                            <h4 class="font-bold text-[#1B4332] dark:text-brand-gold text-sm">أذكار النوم</h4>
+                        </div>
+                    </a>
+
+                    <a href="adhkar.html"
+                        class="flex flex-col items-center gap-3 p-5 bg-white dark:bg-white/5 border border-[#e5e0d4] dark:border-white/10 rounded-2xl hover:border-[#1B4332] dark:hover:border-brand-gold hover:shadow-lg transition-all group">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-[#1B4332]/5 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                            🤲</div>
+                        <div>
+                            <h4 class="font-bold text-[#1B4332] dark:text-brand-gold text-sm">جميع الأذكار</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats (Centered Section) -->
+            <div class="mb-12">
+                <h3
+                    class="font-amiri font-bold text-[#1B4332] dark:text-brand-gold mb-8 text-2xl flex items-center justify-center gap-4">
+                    <div class="h-px w-10 bg-[#D4AF37]/40"></div>
+                    إحصائيات القرآن
+                    <div class="h-px w-10 bg-[#D4AF37]/40"></div>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                    <div
+                        class="bg-white/80 dark:bg-white/5 rounded-2xl p-6 text-center border border-[#e5e0d4] dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+                        <p class="font-serif text-3xl font-bold text-[#1B4332] dark:text-brand-gold mb-1">١١٤</p>
+                        <p class="text-xs text-gray-500 font-medium">سورة</p>
+                    </div>
+                    <div
+                        class="bg-white/80 dark:bg-white/5 rounded-2xl p-6 text-center border border-[#e5e0d4] dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+                        <p class="font-serif text-3xl font-bold text-[#1B4332] dark:text-brand-gold mb-1">٦٢٣٦</p>
+                        <p class="text-xs text-gray-500 font-medium">آية</p>
+                    </div>
+                    <div
+                        class="bg-white/80 dark:bg-white/5 rounded-2xl p-6 text-center border border-[#e5e0d4] dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+                        <p class="font-serif text-3xl font-bold text-[#1B4332] dark:text-brand-gold mb-1">٣٠</p>
+                        <p class="text-xs text-gray-500 font-medium">جزء</p>
+                    </div>
+                    <div
+                        class="bg-white/80 dark:bg-white/5 rounded-2xl p-6 text-center border border-[#e5e0d4] dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+                        <p class="font-serif text-3xl font-bold text-[#1B4332] dark:text-brand-gold mb-1">٦٠</p>
+                        <p class="text-xs text-gray-500 font-medium">حزب</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-border/10 py-6 bg-[#f1ede499] dark:bg-brand-dark text-center text-xs text-gray-500">
+            <p class="flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                القرآن الكريم - القراءة والتدبر والتفسير
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const adhkarData = [
+            // Morning
+            { type: 'morning', text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللهُ، وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.', count: 1, virtue: 'من قالها حين يصبح كفي ما أهمه من أمر الدنيا والآخرة.' },
+            { type: 'morning', text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ.', count: 1, virtue: '' },
+            { type: 'morning', text: 'آية الكرسي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...', count: 1, virtue: 'من قالها حين يصبح أجير من الجن حتى يمسي.' },
+            { type: 'morning', text: 'سُبْحَانَ اللهِ وَبِحَمْدِهِ: عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.', count: 3, virtue: '' },
+
+            // Evening
+            { type: 'evening', text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللهُ، وَحْدَهُ لَا شَرِيكَ لَهُ.', count: 1, virtue: '' },
+            { type: 'evening', text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ.', count: 1, virtue: '' },
+
+            // Sleep
+            { type: 'sleep', text: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.', count: 1, virtue: '' },
+            { type: 'sleep', text: 'اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ.', count: 3, virtue: '' },
+
+            // All/General
+            { type: 'all', text: 'سُبْحَانَ اللهِ وَالْحَمْدُ لِلَّهِ وَلَا إِلَهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ.', count: 100, virtue: 'أحب الكلام إلى الله.' },
+            { type: 'all', text: 'أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ.', count: 100, virtue: '' },
+        ];
+
+        function setCategory(cat) {
+            // Update UI
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('bg-[#1B4332]', 'text-white', 'shadow-lg');
+                    btn.classList.remove('text-gray-600', 'dark:text-white', 'hover:bg-gray-100', 'dark:hover:bg-white/10');
+                } else {
+                    btn.classList.remove('bg-[#1B4332]', 'text-white', 'shadow-lg');
+                    btn.classList.add('text-gray-600', 'dark:text-white', 'hover:bg-gray-100', 'dark:hover:bg-white/10');
+                }
+            });
+
+            // Filter Data
+            const grid = document.getElementById('adhkarGrid');
+            grid.innerHTML = '';
+
+            const filtered = cat === 'all' ? adhkarData : adhkarData.filter(item => item.type === cat || item.type === 'all');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="text-center py-10 text-gray-400">لا توجد أذكار في هذا القسم حالياً</div>';
+                return;
+            }
+
+            filtered.forEach(zekr => {
+                const div = document.createElement('div');
+                div.className = 'bg-white dark:bg-white/5 p-6 rounded-2xl border border-[#e5e0d4] dark:border-white/10 shadow-sm adhkar-card transition-all duration-300 relative';
+
+                div.innerHTML = `
+                    <div class="mb-4">
+                         <p class="font-amiri text-xl md:text-2xl leading-loose text-[#1B4332] dark:text-white font-bold text-center">${zekr.text}</p>
+                    </div>
+                    ${zekr.virtue ? `<div class="bg-amber-50 dark:bg-amber-500/10 rounded-lg p-3 text-sm text-amber-800 dark:text-amber-200 mb-4 text-center border border-amber-100 dark:border-amber-500/20">${zekr.virtue}</div>` : ''}
+                    
+                    <div class="flex items-center justify-center mt-4">
+                        <button class="count-btn w-full py-2 bg-[#1B4332]/5 dark:bg-white/5 hover:bg-[#1B4332] dark:hover:bg-brand-gold hover:text-white dark:hover:text-brand-dark text-[#1B4332] dark:text-brand-gold font-bold rounded-xl transition-colors border border-[#1B4332]/10 dark:border-white/10" onclick="count(this, ${zekr.count})">
+                            ${zekr.count} مرات
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+
+            // Update Title
+            const titles = { 'morning': 'أذكار الصباح', 'evening': 'أذكار المساء', 'sleep': 'أذكار النوم', 'all': 'الأذكار الشاملة' };
+            document.getElementById('pageTitle').textContent = titles[cat] || 'حصن المسلم';
+        }
+
+        function count(btn, max) {
+            let current = parseInt(btn.dataset.current || 0);
+            current++;
+            btn.dataset.current = current;
+
+            if (current >= max) {
+                btn.textContent = 'تم ✓';
+                btn.classList.add('bg-green-600', 'text-white');
+                btn.classList.remove('bg-[#1B4332]/5', 'text-[#1B4332]');
+                btn.disabled = true;
+            } else {
+                btn.textContent = `${max - current} متبقي`;
+            }
+        }
+
+        // On Load
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type') || 'morning';
+        setCategory(type);
+
+    </script>
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn"
+        class="fixed bottom-8 right-8 z-50 bg-[#1B4332] dark:bg-brand-gold text-white dark:text-[#1B4332] p-3 rounded-2xl shadow-2xl opacity-0 translate-y-10 transition-all duration-500 hover:scale-110 active:scale-95 border border-white/20 dark:border-brand-gold group pointer-events-none"
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:-translate-y-1 transition-transform"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <script src="settings.js"></script>
+    <script>
+        // Scroll to Top Logic
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollToTopBtn.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                scrollToTopBtn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollToTopBtn.classList.remove('opacity-100', 'translate-y-0');
+            }
+        });
+    </script>
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
