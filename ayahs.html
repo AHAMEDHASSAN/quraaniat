@@ -428,12 +428,44 @@
       color: #ff7f0e;
     }
 
-    /* Iqlab - Blue-ish */
+    tajweed.madd_2,
+    tajweed.madd_4,
+    tajweed.madd_6,
+    tajweed.madd_6_laazim,
+    tajweed.madda_normal,
+    tajweed.madda_permissible,
+    tajweed.madd_munfasil,
+    tajweed.madd_muttasil {
+      display: inline !important;
+      position: relative;
+      pointer-events: none;
+    }
+
+    /* Targeted fix for Madda over Dagger Alef (Oula'ika) */
+    .madda-fix {
+      display: inline-block !important;
+      width: 0;
+      overflow: visible;
+      position: relative;
+      right: 0.35em;
+      top: -0.05em;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* Targeted fix for 'Oula'ika' */
+    .oulaika-fix tajweed {
+      letter-spacing: -0.35em;
+      margin-left: -0.1em;
+      bottom: 4px;
+    }
+
+    /* Iqlab - Blue */
     tajweed.iqlab {
       color: #1f77b4;
     }
 
-    /* Hamzatul Wasl - Gray */
+    /* Hamzatul Wasl / Silents - Gray */
     tajweed.ham_wasl,
     tajweed.laam_shamsiyah,
     tajweed.silent {
@@ -441,9 +473,8 @@
     }
 
     .dark tajweed.ham_wasl,
-    .dark tajweed.laam_shamsiyah,
-    .dark tajweed.silent {
-      color: #ffffff;
+    .dark tajweed.laam_shamsiyah {
+      color: #777;
     }
 
     /* Ensure tajweed tag doesn't affect font family */
@@ -927,20 +958,48 @@
         .trim();
     }
 
+    function parseAlQuranTajweed(text) {
+      if (!text) return "";
+      let result = "";
+      let stack = [];
+      for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char === '[' && i + 1 < text.length && text[i + 1] !== ' ') {
+          let tagContent = "";
+          let j = i + 1;
+          while (j < text.length && text[j] !== '[') {
+            tagContent += text[j];
+            j++;
+          }
+          stack.push({ tag: tagContent, start: result.length });
+          i = j;
+        } else if (char === ']' && stack.length > 0) {
+          let tagInfo = stack.pop();
+          let tagParts = tagInfo.tag.split(':');
+          let tagName = tagParts[0];
+          let className = "tajweed-" + tagName;
+          let content = result.substring(tagInfo.start);
+          let wrapped = `<span class="${className}">${content}</span>`;
+          result = result.substring(0, tagInfo.start) + wrapped;
+        } else {
+          result += char;
+        }
+      }
+      return result;
+    }
+
     /**
      * Cleans Quranic text for display by removing or replacing problematic
      * specialized Unicode characters that often appear as boxes (tofu).
      */
     function cleanQuranicText(text) {
       if (!text) return "";
-      // With Quran.com Uthmani text, we map specialized marks to standard ones
-      // for maximum compatibility without losing the character's meaning.
+      // Map specialized marks to standard ones, but DO NOT strip Waqf marks (\u06D6-\u06ED)
+      // as they are essential for the 'soundness' (سلامة) of the text.
       return text
         .replace(/\u08F0/g, '\u064C') // Open Dammatan
         .replace(/\u08F1/g, '\u064B') // Open Fathatan
         .replace(/\u08F2/g, '\u064D') // Open Kasratan
-        // Remove characters that often render as boxes in standard fonts
-        .replace(/[\u06D6-\u06ED\u08F3-\u08FF\u0600-\u060F\u06DD\u06DE]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
     }
@@ -1247,7 +1306,7 @@
 
     async function loadSurah() {
       try {
-        // Migration to Quran.com API v4 - now asking for Tajweed text
+        // Reverting to Quran.com v4 for better integrated HTML Tajweed
         const apiUrl = `https://api.quran.com/api/v4/verses/by_chapter/${surahNumber}?language=ar&fields=text_uthmani,text_uthmani_tajweed&per_page=300`;
         const response = await fetch(apiUrl);
         const data = await response.json();
@@ -1293,9 +1352,9 @@
 
           ayahs.forEach((verse, index) => {
             const ayahNumber = verse.verse_number;
-            const originalText = verse.text_uthmani_tajweed || verse.text_uthmani;
-            const textView = stripBasmala(originalText, surahNumber, ayahNumber);
-            if (surahNumber !== 1 && ayahNumber === 1 && textView !== verse.text_uthmani) {
+
+            // Bismillah Header
+            if (surahNumber !== 1 && ayahNumber === 1 && surahNumber !== 9) {
               if (!document.getElementById('bismillah-header')) {
                 const bism = document.createElement('div');
                 bism.id = 'bismillah-header';
@@ -1304,55 +1363,49 @@
                 container.appendChild(bism);
               }
             }
-            let text = textView; // No cleaning here to preserve tajweed tags
-            // If it's plain text (no tajweed tags), apply cleaning, otherwise assume API sent safe HTML
-            if (!text.includes('<tajweed')) {
-              text = cleanQuranicText(textView);
-            }
-
-            // Aggressively strip any trailing numbers/markers/parentheses to avoid duplicates
-            // First, remove the API-provided marker span if it exists (Quran.com v4 style)
-            text = text.replace(/<span class=["']?end["']?>.*?<\/span>/g, '').trim();
-            // Then remove any remaining trailing numeric marks or brackets
-            text = text.replace(/[\s\u00A0\u200B-\u200F\d\u0660-\u0669\u06F0-\u06F9\u06DD\u06DE\(\)\[\]\{\}]+$/, '').trim();
 
             const row = document.createElement('div');
             row.className = 'ayah-row group';
-            row.id = `ayah-${ayahNumber}`; // Add ID for scrolling
+            row.id = `ayah-${ayahNumber}`;
 
             // Heart Btn
             const heartBtn = document.createElement('button');
             heartBtn.className = `heart-btn ${checkFavorite(surahNumber, ayahNumber) ? 'active' : ''}`;
             heartBtn.innerHTML = `
-                        <svg viewBox="0 0 24 24">
-                           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    `;
+                <svg viewBox="0 0 24 24">
+                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
             heartBtn.onclick = (e) => {
               e.stopPropagation();
               toggleFavorite({
                 surah: surahNumber,
                 surahName: surahNameArabic,
                 ayah: ayahNumber,
-                text: text
+                text: verse.text_uthmani || verse.text_uthmani_tajweed || `سورة ${surahNameArabic} - الآية ${ayahNumber}`
               }, heartBtn);
             };
 
             // Ayah Text
             const ayahDiv = document.createElement('div');
-            ayahDiv.className = 'ayah-text';
-            ayahDiv.innerHTML = `
-                        ${text}
-                        <span class="ayah-end">${ayahNumber.toLocaleString('ar-EG')}</span>
-                    `;
+            ayahDiv.className = 'ayah-text cursor-pointer';
 
-            // Click to go to detail
-            ayahDiv.onclick = (e) => {
-              e.stopPropagation();
+            // Fallback to text_uthmani (Safe and Solid)
+            let text = verse.text_uthmani_tajweed || verse.text_uthmani;
+
+            // Targeted Fix (Refined Regex): Apply fix for Madda following a dagger alef (Oula'ika)
+            text = text.replace(/(\u0670)<tajweed class="(madd_[^"]+)">/g, '$1<tajweed class="madda-fix $2">');
+            // Handle case where dagger alef is inside
+            text = text.replace(/(<tajweed class="madd_[^>]+">)(\u0670)/g, '$1<span class="madda-fix">$2</span>');
+
+            ayahDiv.innerHTML = `
+                ${text}
+                <span class="ayah-end">${ayahNumber.toLocaleString('ar-EG')}</span>
+            `;
+
+            ayahDiv.onclick = () => {
               window.location.href = `ayah_detail.html?surah=${surahNumber}&ayah=${ayahNumber}`;
             };
-
-
 
             row.appendChild(heartBtn);
             row.appendChild(ayahDiv);

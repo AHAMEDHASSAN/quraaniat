@@ -208,8 +208,53 @@
              border-color: #2D5A46 !important;
         }
         
-        body.dark .settings-header {
-             color: white !important;
+        /* Custom Select Styling */
+        .settings-select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .settings-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #1e293b;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .dark .settings-select {
+            background: #163326;
+            border-color: #2D5A46;
+            color: #e2e8f0;
+        }
+        .settings-select:focus {
+            border-color: #1B4332;
+            box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.1);
+        }
+        .dark .settings-select:focus {
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        .select-arrow {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #64748b;
+        }
+        .dark .select-arrow {
+            color: #94a3b8;
         }
     `;
     document.head.appendChild(style);
@@ -272,6 +317,34 @@
                         <button class="option-btn" data-height="2.0">عادي</button>
                         <button class="option-btn" data-height="2.4">مريح</button>
                         <button class="option-btn" data-height="3.0">واسع</button>
+                    </div>
+                </div>
+
+                <!-- Navigation Selectors -->
+                <div class="settings-section">
+                    <label class="settings-label">الانتقال السريع</label>
+                    <div class="settings-select-group">
+                        <!-- Surah Select -->
+                        <div class="custom-select-wrapper">
+                            <select id="jumpToSurah" class="settings-select">
+                                <option value="" disabled selected>اختر السورة...</option>
+                                <!-- Populated by JS -->
+                            </select>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="select-arrow h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+
+                        <!-- Juz Select -->
+                        <div class="custom-select-wrapper">
+                            <select id="jumpToJuz" class="settings-select">
+                                <option value="" disabled selected>اختر الجزء...</option>
+                                <!-- Populated by JS -->
+                            </select>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="select-arrow h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
 
@@ -356,8 +429,48 @@
         });
     }
 
+    // --- Navigation Selectors ---
+    const suras = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+    const juzStartSurah = { 1:1, 2:2, 3:2, 4:3, 5:4, 6:4, 7:5, 8:6, 9:7, 10:8, 11:9, 12:11, 13:12, 14:15, 15:17, 16:18, 17:21, 18:23, 19:25, 20:27, 21:29, 22:33, 23:36, 24:39, 25:42, 26:46, 27:51, 28:58, 29:67, 30:78 };
+
+    function initNavigation() {
+        const surahSelect = document.getElementById('jumpToSurah');
+        const juzSelect = document.getElementById('jumpToJuz');
+
+        // Populate Surahs
+        suras.forEach((name, i) => {
+            const opt = document.createElement('option');
+            opt.value = i + 1;
+            opt.textContent = `${i + 1}. ${name}`;
+            surahSelect.appendChild(opt);
+        });
+
+        // Populate Juz
+        for (let i = 1; i <= 30; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `الجزء ${i}`;
+            juzSelect.appendChild(opt);
+        }
+
+        // Surah Navigation
+        surahSelect.onchange = (e) => {
+            const val = e.target.value;
+            if (val) window.location.href = `ayahs.html?surah=${val}&name=${encodeURIComponent(suras[val-1])}`;
+        };
+
+        // Juz Navigation
+        juzSelect.onchange = (e) => {
+            const juz = e.target.value;
+            const sNum = juzStartSurah[juz];
+            if (sNum) window.location.href = `ayahs.html?surah=${sNum}&name=${encodeURIComponent(suras[sNum-1])}`;
+        };
+    }
+
     // Init Logic
     function initSettings() {
+        // Run Navigation Init
+        initNavigation();
         // Theme
         const storedTheme = localStorage.getItem('kran_theme') || 'dark';
         setTheme(storedTheme);

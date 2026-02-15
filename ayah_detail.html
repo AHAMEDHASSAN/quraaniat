@@ -689,6 +689,83 @@
             color: #b30000;
         }
 
+        /* Qalqalah - Orange/Brown */
+        tajweed.qalqalah {
+            color: #ff7f0e;
+        }
+
+        /* Iqlab - Blue-ish */
+        tajweed.iqlab {
+            color: #1f77b4;
+        }
+
+        /* Fix Madda positioning */
+        .tajweed-n,
+        .tajweed-p,
+        .tajweed-m {
+            display: inline;
+            position: relative;
+            top: -0.4em;
+            margin-right: -0.1em;
+            color: #ff0000;
+        }
+
+        .tajweed-h,
+        .tajweed-s,
+        .tajweed-l {
+            color: #999;
+        }
+
+        .tajweed-q {
+            color: #ff7f0e;
+        }
+
+        .tajweed-g,
+        .tajweed-o {
+            color: #d63384;
+        }
+
+        .tajweed-i {
+            color: #1f77b4;
+        }
+
+        .tajweed-f {
+            color: #f7941d;
+        }
+
+        .tajweed-c {
+            color: #1f77b4;
+        }
+
+        /* Dark mode adjustments */
+        .dark .tajweed-h,
+        .dark .tajweed-s,
+        .dark .tajweed-l {
+            color: #ccc;
+        }
+
+        /* Hamzatul Wasl - Gray */
+        tajweed.ham_wasl,
+        tajweed.laam_shamsiyah,
+        /* Ensure tajweed tag doesn't affect font family */
+        tajweed {
+            font-family: inherit;
+        }
+
+        /* Fix Tajweed connectivity and coloring */
+        tajweed {
+            display: inline !important;
+            font-style: normal;
+            font-family: inherit;
+        }
+
+        /* Tajweed Rules (Global) */
+        tajweed.ghunnah,
+        tajweed.ikhfa,
+        tajweed.ikhfa_shafawi {
+            color: #1f7c32;
+        }
+
         tajweed.qalqalah {
             color: #ff7f0e;
         }
@@ -704,13 +781,54 @@
         }
 
         .dark tajweed.ham_wasl,
-        .dark tajweed.laam_shamsiyah,
-        .dark tajweed.silent {
-            color: #ffffff;
+        .dark tajweed.laam_shamsiyah {
+            color: #777;
         }
 
-        tajweed {
-            font-family: inherit;
+        /* Fix Madda positioning - Safe Overlap (keeps connectivity) */
+        tajweed.madd_2,
+        tajweed.madd_4,
+        tajweed.madd_6,
+        tajweed.madd_6_laazim,
+        tajweed.madda_normal,
+        tajweed.madda_permissible,
+        tajweed.madd_munfasil,
+        tajweed.madd_muttasil {
+            display: inline !important;
+            /* CRITICAL: Must be inline for Arabic connectivity */
+            position: relative;
+            pointer-events: none;
+        }
+
+        /* Targeted fix for Madda over Dagger Alef (Oula'ika) */
+        .madda-fix {
+            display: inline-block !important;
+            /* Targeted use only */
+            width: 0;
+            overflow: visible;
+            position: relative;
+            right: 0.35em;
+            top: -0.05em;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        /* Madda Colors */
+        tajweed.madda_normal {
+            color: #ffcccc;
+        }
+
+        tajweed.madd_2,
+        tajweed.madd_4,
+        tajweed.madda_permissible,
+        tajweed.madd_munfasil,
+        tajweed.madd_muttasil {
+            color: #ff0000;
+        }
+
+        tajweed.madd_6,
+        tajweed.madd_6_laazim {
+            color: #b30000;
         }
     </style>
 </head>
@@ -1321,7 +1439,7 @@
             }
 
             try {
-                // Fetch basic info and tajweed text
+                // Fetch basic info and tajweed text (Reverting to Quran.com v4)
                 const apiUrl = `https://api.quran.com/api/v4/verses/by_key/${surah}:${ayah}?language=ar&fields=text_uthmani,text_uthmani_tajweed&words=true`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
@@ -1330,8 +1448,6 @@
                     const ayahData = data.verse;
                     currentAyahData = ayahData; // Store the full ayah data
                     const surahName = surahs[surah - 1];
-                    // To get total ayahs, we might need chapter info or use a constant
-                    // For now, let's fetch chapter info to be accurate
                     const chapterRes = await fetch(`https://api.quran.com/api/v4/chapters/${surah}`);
                     const chapterData = await chapterRes.json();
                     const totalAyahs = chapterData.chapter.verses_count;
@@ -1354,23 +1470,19 @@
                         ayahNumInfo.textContent = `الآية ${ayah.toLocaleString('ar-EG')} من ${totalAyahs.toLocaleString('ar-EG')}`;
                     }
 
-                    const originalText = ayahData.text_uthmani_tajweed || ayahData.text_uthmani;
-                    const textView = stripBasmala(originalText, surah, ayah);
+                    // Reverting to stable text display
+                    let text = ayahData.text_uthmani_tajweed || ayahData.text_uthmani;
 
-                    let displayText = textView;
-                    if (!displayText.includes('<tajweed')) {
-                        displayText = cleanQuranicText(textView);
-                    }
-
-                    // Aggressively strip any trailing numbers/markers/parentheses (robust)
-                    // Remove API-provided span marker if present
-                    displayText = displayText.replace(/<span class=["']?end["']?>.*?<\/span>/g, '').trim();
-                    // Remove remaining trailing characters
-                    displayText = displayText.replace(/[\s\u00A0\u200B-\u200F\d\u0660-\u0669\u06F0-\u06F9\u06DD\u06DE\(\)\[\]\{\}]+$/, '').trim();
+                    // Targeted Fix (Refined Regex): Apply fix for Madda following a dagger alef
+                    text = text.replace(/(\u0670)<tajweed class="(madd_[^"]+)">/g, '$1<tajweed class="madda-fix $2">');
+                    // Handle case where dagger alef is inside
+                    text = text.replace(/(<tajweed class="madd_[^>]+">)(\u0670)/g, '$1<span class="madda-fix">$2</span>');
 
                     document.getElementById('ayahText').innerHTML = `
-                        ${displayText}
-                        <span class="ayah-end">${parseInt(ayah).toLocaleString('ar-EG')}</span>
+                        <div class="ayah-text font-serif text-3xl md:text-5xl leading-[2.5] md:leading-[3] text-[#1B4332] dark:text-white text-center mb-8 px-4">
+                            ${text}
+                            <span class="ayah-end">${parseInt(ayah).toLocaleString('ar-EG')}</span>
+                        </div>
                     `;
                     currentSurahName = surahName;
                     document.getElementById('ayahNumBadge').textContent = ayah.toLocaleString('ar-EG');
@@ -1462,11 +1574,11 @@
 
         function cleanQuranicText(text) {
             if (!text) return "";
+            // Map specialized marks to standard ones, but DO NOT strip Waqf marks (\u06D6-\u06ED)
             return text
                 .replace(/\u08F0/g, '\u064C') // Open Dammatan
                 .replace(/\u08F1/g, '\u064B') // Open Fathatan
                 .replace(/\u08F2/g, '\u064D') // Open Kasratan
-                .replace(/[\u06D6-\u06ED\u08F3-\u08FF\u0600-\u060F\u06DD\u06DE]/g, '')
                 .replace(/\s+/g, ' ')
                 .trim();
         }
