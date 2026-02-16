@@ -1714,45 +1714,49 @@
     // For now, let's try to run it after a timeout to allow settings.js to inject content.
     setTimeout(initPageNavigation, 1000);
 
-    window.onload = () => {
-      window.onload = loadSurah;
+    // Initialize Page
+    window.addEventListener('load', () => {
+      loadSurah();
+      // Try initializing navigation after sidebar injection
+      setTimeout(initPageNavigation, 1000);
+    });
   </script>
 
   <script>
-      // Scroll to Top Logic
-      const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-      window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-          scrollToTopBtn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
-          scrollToTopBtn.classList.add('opacity-100', 'translate-y-0');
-        } else {
-          scrollToTopBtn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
-          scrollToTopBtn.classList.remove('opacity-100', 'translate-y-0');
-        }
-      });
-      // ====== Immersive Mode Logic ======
-      document.addEventListener('click', (e) => {
-
-
-        // Ignore if clicking interactive elements or UI containers
-        if (e.target.closest('button, a, input, select, textarea, #stickyPlayer, #mainHeader, #breadcrumbBar, #surahDropdown, #reciterDropdown')) {
-          return;
-        }
-
-        // Toggle class for empty space
-        document.body.classList.toggle('immersive-mode');
-      });
-
-  </script>
-  <script>
-      // Service Worker Registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker registered:', reg))
-            .catch(err => console.log('Service Worker registration failed:', err));
-        });
+    // Scroll to Top Logic
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+        scrollToTopBtn.classList.add('opacity-100', 'translate-y-0');
+      } else {
+        scrollToTopBtn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+        scrollToTopBtn.classList.remove('opacity-100', 'translate-y-0');
       }
+    });
+    // ====== Immersive Mode Logic ======
+    document.addEventListener('click', (e) => {
+
+
+      // Ignore if clicking interactive elements or UI containers
+      if (e.target.closest('button, a, input, select, textarea, #stickyPlayer, #mainHeader, #breadcrumbBar, #surahDropdown, #reciterDropdown')) {
+        return;
+      }
+
+      // Toggle class for empty space
+      document.body.classList.toggle('immersive-mode');
+    });
+
+  </script>
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered:', reg))
+          .catch(err => console.log('Service Worker registration failed:', err));
+      });
+    }
   </script>
 </body>
 

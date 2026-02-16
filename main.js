@@ -13,8 +13,12 @@ const surahs = [
     "المسد", "الإخلاص", "الفلق", "الناس"
 ];
 
+const juzStartSurah = { 1:1, 2:2, 3:2, 4:3, 5:4, 6:4, 7:5, 8:6, 9:7, 10:8, 11:9, 12:11, 13:12, 14:15, 15:17, 16:18, 17:21, 18:23, 19:25, 20:27, 21:29, 22:33, 23:36, 24:39, 25:42, 26:46, 27:51, 28:58, 29:67, 30:78 };
+
 const grid = document.getElementById('surahGrid');
 const searchInput = document.getElementById('searchInput');
+const juzSelect = document.getElementById('juzSelect');
+const surahSelect = document.getElementById('surahSelect');
 const noResults = document.getElementById('noResults');
 
 function normalizeArabic(text) {
@@ -26,33 +30,87 @@ function normalizeArabic(text) {
         .replace(/ى/g, 'ي'); // Alef Maqsura -> Ya
 }
 
-function renderSurahs(filterText = '') {
+// Populate Filters
+function initFilters() {
+    // Populate Juz
+    for (let i = 1; i <= 30; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `الجزء ${i}`;
+        juzSelect.appendChild(opt);
+    }
+
+    // Populate Surahs (1-114)
+    surahs.forEach((name, i) => {
+        const opt = document.createElement('option');
+        opt.value = i + 1;
+        opt.textContent = `${(i + 1).toLocaleString('ar-EG')}. ${name}`;
+        surahSelect.appendChild(opt);
+    });
+}
+
+function getSurahsInJuz(juz) {
+    if (!juz) return [];
+    const start = juzStartSurah[juz];
+    const end = juzStartSurah[parseInt(juz) + 1] || 115; // 115 is beyond end
+    const list = [];
+    for (let i = start; i < end; i++) {
+        list.push(i);
+    }
+    return list; // Returns array of Surah Numbers (1-based)
+}
+
+function renderSurahs() {
     grid.innerHTML = '';
-    const normalizedFilter = filterText.trim();
+    
+    const filterText = searchInput.value.trim();
+    const selectedJuz = juzSelect.value;
+    const selectedSurah = surahSelect.value;
+
+    const normalizedFilter = filterText;
     const toWestern = (s) => s.replace(/[\u0660-\u0669]/g, d => d.charCodeAt(0) - 1632);
     const westernFilter = toWestern(normalizedFilter);
     const isNumber = /^[0-9\u0660-\u0669]+$/.test(normalizedFilter);
     const searchNumber = isNumber ? parseInt(westernFilter) : null;
     const query = normalizeArabic(normalizedFilter);
 
+    // Get Surahs allowed by Juz filter
+    const allowedByJuz = selectedJuz ? getSurahsInJuz(selectedJuz) : null;
+
     const filtered = surahs.filter((name, index) => {
         const surahNumber = index + 1;
-        if (isNumber) {
-            return surahNumber === searchNumber;
+        
+        // 1. Surah Select Filter (Strongest)
+        if (selectedSurah && surahNumber !== parseInt(selectedSurah)) {
+            return false;
         }
-        return normalizeArabic(name).includes(query);
+
+        // 2. Juz Filter
+        if (allowedByJuz && !allowedByJuz.includes(surahNumber)) {
+            return false;
+        }
+
+        // 3. Text Search
+        if (filterText) {
+             if (isNumber) {
+                return surahNumber === searchNumber;
+            }
+            return normalizeArabic(name).includes(query);
+        }
+
+        return true;
     });
 
     if (filtered.length === 0) {
         noResults.classList.remove('hidden');
     } else {
         noResults.classList.add('hidden');
-        filtered.forEach((name, index) => {
+        filtered.forEach((name) => {
            const btn = document.createElement('button');
            const surahIndex = surahs.indexOf(name);
            const surahNumber = surahIndex + 1;
 
-           const isFiltered = !!filterText;
+           const isFiltered = !!filterText || !!selectedJuz || !!selectedSurah;
            const nameColor = isFiltered ? 'text-brand' : 'text-gray-700';
            const indicatorDisplay = isFiltered ? 'flex' : 'hidden';
 
@@ -78,20 +136,14 @@ function renderSurahs(filterText = '') {
            `;
            
            btn.onclick = (e) => {
-               // Sticky Hover Logic for Mobile
-               // Check if this card is already active (selected)
                if (btn.classList.contains('active-surah')) {
-                   // If already active, navigate
                    window.location.href = `ayahs.html?surah=${surahNumber}&name=${encodeURIComponent(name)}`;
                } else {
-                   // If not active, activate this one and deactivate others
-                   // Remove active class from all other cards
                    document.querySelectorAll('.surah-card').forEach(card => {
                        card.classList.remove('active-surah', 'border-brand-gold', 'text-brand-DEFAULT', 'shadow-md', 'dark:text-white');
                        card.classList.add('border-gray-200', 'dark:border-white/10', 'text-gray-700', 'dark:text-white/80');
                    });
                    
-                   // Add active class to clicked card
                    btn.classList.add('active-surah', 'border-brand-gold', 'text-brand-DEFAULT', 'shadow-md', 'dark:text-white');
                    btn.classList.remove('border-gray-200', 'dark:border-white/10', 'text-gray-700', 'dark:text-white/80');
                }
@@ -103,11 +155,20 @@ function renderSurahs(filterText = '') {
 }
 
 // Initial Render
+initFilters();
 renderSurahs();
 
-// Search Listener
-searchInput.addEventListener('input', (e) => {
-    renderSurahs(e.target.value);
+// Search & Filter Listeners
+searchInput.addEventListener('input', renderSurahs);
+juzSelect.addEventListener('change', () => {
+    // Reset Surah Select if Juz changes to avoid conflict (optional, but good UX)
+    surahSelect.value = ""; 
+    renderSurahs();
+});
+surahSelect.addEventListener('change', () => {
+    // Reset Juz Select if specific Surah chosen (optional)
+    juzSelect.value = "";
+    renderSurahs();
 });
 
 // ====== Verse Tracking ======
