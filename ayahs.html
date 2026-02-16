@@ -194,20 +194,19 @@
 
     /* End Ayah Symbol */
     .ayah-end {
-      display: inline-flex;
+      display: inline-flex !important;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      background-image: url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 35C27.3888 35 35 27.3888 35 18C35 8.61116 27.3888 1 18 1C8.61116 1 1 8.61116 1 18C1 27.3888 8.61116 35 18 35Z' stroke='%23D4AF37' stroke-width='1.5' stroke-miterlimit='10'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      margin: 0 8px;
-      font-family: "Cairo", sans-serif;
-      font-size: 0.9rem;
-      color: #D4AF37;
+      color: #cfb53b;
+      font-family: "Amiri", serif;
+      font-size: 0.9em;
+      margin-right: 10px;
+      border: 1px solid #cfb53b;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
       vertical-align: middle;
+      font-weight: bold;
     }
 
     /* Heart Button */
@@ -447,8 +446,9 @@
       width: 0;
       overflow: visible;
       position: relative;
-      right: 0.35em;
-      top: -0.05em;
+      right: 0.3em;
+      top: -0.8em;
+      /* Moved significantly higher above the alef */
       white-space: nowrap;
       text-align: center;
     }
@@ -1393,6 +1393,16 @@
             // Fallback to text_uthmani (Safe and Solid)
             let text = verse.text_uthmani_tajweed || verse.text_uthmani;
 
+            // Fix duplicate numbers: deeply strip existing number/separator from the end of text, accounting for HTML
+            // 1. Remove trailing numbers/symbols if they are outside tags
+            text = text.replace(/[\u0660-\u06690-9\u06DD\s]+$/, '');
+            // 2. Remove trailing numbers/symbols if they are inside the last closing tag (common in some API responses)
+            text = text.replace(/([\u0660-\u06690-9\u06DD\s]+)(<\/[^>]+>)$/, '$2');
+            // 3. Remove if they are just before the last closing tag but after content
+            text = text.replace(/([\u0660-\u06690-9\u06DD\s]+)(<\/[^>]+>)\s*$/, '$2');
+
+            text = text.trim();
+
             // Targeted Fix (Refined Regex): Apply fix for Madda following a dagger alef (Oula'ika)
             text = text.replace(/(\u0670)<tajweed class="(madd_[^"]+)">/g, '$1<tajweed class="madda-fix $2">');
             // Handle case where dagger alef is inside
@@ -1659,7 +1669,56 @@
       }
     });
 
-    window.onload = loadSurah;
+    // --- Selector Logic (Moved from settings.js to ensure loading) ---
+    const juzStartSurahMap = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 4, 7: 5, 8: 6, 9: 7, 10: 8, 11: 9, 12: 11, 13: 12, 14: 15, 15: 17, 16: 18, 17: 21, 18: 23, 19: 25, 20: 27, 21: 29, 22: 33, 23: 36, 24: 39, 25: 42, 26: 46, 27: 51, 28: 58, 29: 67, 30: 78 };
+
+    function initPageNavigation() {
+      const surahSelect = document.getElementById('jumpToSurah');
+      const juzSelect = document.getElementById('jumpToJuz');
+
+      if (!surahSelect || !juzSelect) return;
+
+      // Populate Surahs
+      suras.forEach((name, i) => {
+        const opt = document.createElement('option');
+        opt.value = i + 1;
+        opt.textContent = `${i + 1}. ${name}`;
+        surahSelect.appendChild(opt);
+      });
+
+      // Populate Juz
+      for (let i = 1; i <= 30; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `الجزء ${i}`;
+        juzSelect.appendChild(opt);
+      }
+
+      // Surah Navigation
+      surahSelect.onchange = (e) => {
+        const val = e.target.value;
+        if (val) window.location.href = `ayahs.html?surah=${val}&name=${encodeURIComponent(suras[val - 1])}`;
+      };
+
+      // Juz Navigation
+      juzSelect.onchange = (e) => {
+        const juz = e.target.value;
+        const sNum = juzStartSurahMap[juz];
+        if (sNum) window.location.href = `ayahs.html?surah=${sNum}&name=${encodeURIComponent(suras[sNum - 1])}`;
+      };
+    }
+
+    // Call initPageNavigation when settings sidebar is likely injected or after a short delay
+    // Since settings.js injects HTML, we need to wait or use a mutation observer.
+    // However, if we move the HTML to this page, it would be better.
+    // For now, let's try to run it after a timeout to allow settings.js to inject content.
+    setTimeout(initPageNavigation, 1000);
+
+    window.onload = () => {
+      loadSurah();
+      // Double check init in case setTimeout was too fast/slow
+      setTimeout(initPageNavigation, 500);
+    };
   </script>
 
   <script>
