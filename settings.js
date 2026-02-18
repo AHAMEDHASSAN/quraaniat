@@ -4,10 +4,10 @@
  * Injects the sidebar HTML into the page automatically.
  */
 
-(function() {
-    // 1. Inject CSS for the Sidebar
-    const style = document.createElement('style');
-    style.textContent = `
+(function () {
+  // 1. Inject CSS for the Sidebar
+  const style = document.createElement("style");
+  style.textContent = `
         /* Sidebar Overlay */
         .settings-overlay {
             position: fixed;
@@ -257,11 +257,10 @@
             color: #94a3b8;
         }
     `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 
-
-    // 2. Inject HTML for Sidebar
-    const sidebarHTML = `
+  // 2. Inject HTML for Sidebar
+  const sidebarHTML = `
         <div class="settings-overlay" id="settingsOverlay"></div>
         <div class="settings-sidebar" id="settingsSidebar">
             <div class="settings-header">
@@ -320,34 +319,6 @@
                     </div>
                 </div>
 
-                <!-- Navigation Selectors -->
-                <div class="settings-section">
-                    <label class="settings-label">الانتقال السريع</label>
-                    <div class="settings-select-group">
-                        <!-- Surah Select -->
-                        <div class="custom-select-wrapper">
-                            <select id="jumpToSurah" class="settings-select">
-                                <option value="" disabled selected>اختر السورة...</option>
-                                <!-- Populated by JS -->
-                            </select>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="select-arrow h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-
-                        <!-- Juz Select -->
-                        <div class="custom-select-wrapper">
-                            <select id="jumpToJuz" class="settings-select">
-                                <option value="" disabled selected>اختر الجزء...</option>
-                                <!-- Populated by JS -->
-                            </select>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="select-arrow h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Reading Options -->
                 <div class="settings-section">
                     <label class="settings-label">خيارات القراءة</label>
@@ -362,145 +333,110 @@
             </div>
         </div>
     `;
-    
-    const div = document.createElement('div');
-    div.innerHTML = sidebarHTML;
-    document.body.appendChild(div);
 
-    // 3. Logic & Event Listeners
-    const overlay = document.getElementById('settingsOverlay');
-    const sidebar = document.getElementById('settingsSidebar');
-    const closeBtn = document.getElementById('closeSettings');
-    
-    // Toggle Function
-    window.toggleSettings = function() {
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('open');
-    };
+  const div = document.createElement("div");
+  div.innerHTML = sidebarHTML;
+  document.body.appendChild(div);
 
-    // Close Events
-    closeBtn.onclick = window.toggleSettings;
-    overlay.onclick = window.toggleSettings;
+  // 3. Logic & Event Listeners
+  const overlay = document.getElementById("settingsOverlay");
+  const sidebar = document.getElementById("settingsSidebar");
+  const closeBtn = document.getElementById("closeSettings");
 
-    // --- State Management ---
-    
+  // Toggle Function
+  window.toggleSettings = function () {
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("open");
+  };
+
+  // Close Events
+  closeBtn.onclick = window.toggleSettings;
+  overlay.onclick = window.toggleSettings;
+
+  // --- State Management ---
+
+  // Theme
+  const themeBtns = document.querySelectorAll("[data-theme]");
+  function setTheme(theme) {
+    localStorage.setItem("kran_theme", theme);
+    document.body.classList.remove("dark", "light");
+    document.documentElement.classList.remove("dark", "light");
+
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+      document.documentElement.classList.add("dark");
+    } else if (theme === "auto") {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        document.body.classList.add("dark");
+        document.documentElement.classList.add("dark");
+      }
+    }
+
+    // Update Buttons
+    themeBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.theme === theme);
+    });
+  }
+
+  // Font Size
+  const sizeBtns = document.querySelectorAll("[data-size]");
+  function setFontSize(size) {
+    localStorage.setItem("kran_font_size", size);
+    document.documentElement.style.setProperty("--ayah-font-size", size);
+
+    sizeBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.size === size);
+    });
+  }
+
+  // Line Height
+  const heightBtns = document.querySelectorAll("[data-height]");
+  function setLineHeight(height) {
+    localStorage.setItem("kran_line_height", height);
+    document.documentElement.style.setProperty("--ayah-line-height", height);
+
+    heightBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.height === height);
+    });
+  }
+
+  function initSettings() {
     // Theme
-    const themeBtns = document.querySelectorAll('[data-theme]');
-    function setTheme(theme) {
-        localStorage.setItem('kran_theme', theme);
-        document.body.classList.remove('dark', 'light');
-        document.documentElement.classList.remove('dark', 'light');
-        
-        if (theme === 'dark') {
-            document.body.classList.add('dark');
-            document.documentElement.classList.add('dark');
-        } else if (theme === 'auto') {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.body.classList.add('dark');
-                document.documentElement.classList.add('dark');
-            }
-        }
-        
-        // Update Buttons
-        themeBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === theme);
-        });
+    const storedTheme = localStorage.getItem("kran_theme") || "dark";
+    setTheme(storedTheme);
+
+    // Size
+    const storedSize = localStorage.getItem("kran_font_size") || "1.8rem";
+    setFontSize(storedSize);
+
+    // Height
+    const storedHeight = localStorage.getItem("kran_line_height") || "2.4";
+    setLineHeight(storedHeight);
+
+    // Auto Resume
+    const autoResumeToggle = document.getElementById("autoResumeToggle");
+    if (autoResumeToggle) {
+      const isAutoResume = localStorage.getItem("kran_auto_resume") === "true";
+      autoResumeToggle.checked = isAutoResume;
+
+      autoResumeToggle.onchange = (e) => {
+        localStorage.setItem("kran_auto_resume", e.target.checked);
+      };
     }
+  }
 
-    // Font Size
-    const sizeBtns = document.querySelectorAll('[data-size]');
-    function setFontSize(size) {
-        localStorage.setItem('kran_font_size', size);
-        document.documentElement.style.setProperty('--ayah-font-size', size);
-        
-        sizeBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.size === size);
-        });
-    }
+  // Listeners for Buttons
+  themeBtns.forEach((btn) => (btn.onclick = () => setTheme(btn.dataset.theme)));
+  sizeBtns.forEach(
+    (btn) => (btn.onclick = () => setFontSize(btn.dataset.size)),
+  );
+  heightBtns.forEach(
+    (btn) => (btn.onclick = () => setLineHeight(btn.dataset.height)),
+  );
 
-    // Line Height
-    const heightBtns = document.querySelectorAll('[data-height]');
-    function setLineHeight(height) {
-        localStorage.setItem('kran_line_height', height);
-        document.documentElement.style.setProperty('--ayah-line-height', height);
-        
-        heightBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.height === height);
-        });
-    }
-
-    // --- Navigation Selectors ---
-    const suras = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
-    const juzStartSurah = { 1:1, 2:2, 3:2, 4:3, 5:4, 6:4, 7:5, 8:6, 9:7, 10:8, 11:9, 12:11, 13:12, 14:15, 15:17, 16:18, 17:21, 18:23, 19:25, 20:27, 21:29, 22:33, 23:36, 24:39, 25:42, 26:46, 27:51, 28:58, 29:67, 30:78 };
-
-    function initNavigation() {
-        const surahSelect = document.getElementById('jumpToSurah');
-        const juzSelect = document.getElementById('jumpToJuz');
-
-        // Populate Surahs
-        suras.forEach((name, i) => {
-            const opt = document.createElement('option');
-            opt.value = i + 1;
-            opt.textContent = `${i + 1}. ${name}`;
-            surahSelect.appendChild(opt);
-        });
-
-        // Populate Juz
-        for (let i = 1; i <= 30; i++) {
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.textContent = `الجزء ${i}`;
-            juzSelect.appendChild(opt);
-        }
-
-        // Surah Navigation
-        surahSelect.onchange = (e) => {
-            const val = e.target.value;
-            if (val) window.location.href = `ayahs.html?surah=${val}&name=${encodeURIComponent(suras[val-1])}`;
-        };
-
-        // Juz Navigation
-        juzSelect.onchange = (e) => {
-            const juz = e.target.value;
-            const sNum = juzStartSurah[juz];
-            if (sNum) window.location.href = `ayahs.html?surah=${sNum}&name=${encodeURIComponent(suras[sNum-1])}`;
-        };
-    }
-
-    // Init Logic
-    function initSettings() {
-        // Run Navigation Init
-        initNavigation();
-        // Theme
-        const storedTheme = localStorage.getItem('kran_theme') || 'dark';
-        setTheme(storedTheme);
-
-        // Size
-        const storedSize = localStorage.getItem('kran_font_size') || '1.8rem';
-        setFontSize(storedSize);
-
-        // Height
-        const storedHeight = localStorage.getItem('kran_line_height') || '2.4';
-        setLineHeight(storedHeight);
-
-        // Auto Resume
-        const autoResumeToggle = document.getElementById('autoResumeToggle');
-        if (autoResumeToggle) {
-            const isAutoResume = localStorage.getItem('kran_auto_resume') === 'true';
-            autoResumeToggle.checked = isAutoResume;
-
-            autoResumeToggle.onchange = (e) => {
-                localStorage.setItem('kran_auto_resume', e.target.checked);
-            };
-        }
-    }
-    
-    // Listeners for Buttons
-    themeBtns.forEach(btn => btn.onclick = () => setTheme(btn.dataset.theme));
-    sizeBtns.forEach(btn => btn.onclick = () => setFontSize(btn.dataset.size));
-    heightBtns.forEach(btn => btn.onclick = () => setLineHeight(btn.dataset.height));
-
-    // Run Init
-    initSettings();
-
+  // Run Init
+  initSettings();
 })();
