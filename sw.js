@@ -11,7 +11,7 @@ const ASSETS_TO_CACHE = [
     './search.js',
     './settings.js',
     './manifest.json',
-    './img/Logo.jpeg'
+    './img/icon-512.png'
 ];
 
 // Install Event: Pre-cache core assets
